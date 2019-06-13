@@ -157,12 +157,29 @@ class EmailDelivery(object):
         resource_owner_tag_values = get_resource_tag_targets(resource, resource_owner_tag_keys)
         explicit_emails = self.get_valid_emails_from_list(resource_owner_tag_values)
 
-        # resolve the contact info from ldap
-        non_email_ids = list(set(resource_owner_tag_values).difference(explicit_emails))
-        ldap_emails = list(chain.from_iterable([self.ldap_lookup.get_email_to_addrs_from_uid
-                                              (uid) for uid in non_email_ids]))
+        if explicit_emails:
+            if is_email(explicit_emails):
+                return [explicit_emails]
 
-        return list(chain(explicit_emails, ldap_emails))
+            # if the LDAP config is set, lookup in ldap
+            elif self.config.get('ldap_uri', False):
+               return self.ldap_lookup.get_email_to_addrs_from_uid(explicit_emails)
+
+            # the org_domain setting is configured, append the org_domain
+            # to the username from AWS
+            elif self.config.get('org_domain', False):
+                org_domain = self.config.get('org_domain', False)
+                self.logger.info('adding email %s to targets.', explicit_emails + '@' + org_domain)
+                return [explicit_emails + '@' + org_domain]
+
+            else:
+                self.logger.warning('unable to lookup owner email. \
+                                        Please configure LDAP or org_domain')
+        else:
+            self.logger.info('no aws username in resource tag')
+
+        return []
+
 
     def get_account_emails(self, sqs_message):
         email_list = []
