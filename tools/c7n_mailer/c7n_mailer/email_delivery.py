@@ -161,7 +161,7 @@ class EmailDelivery(object):
                 return [explicit_emails]
             # if the LDAP config is set, lookup in ldap
             elif self.config.get('ldap_uri', False):
-               return self.ldap_lookup.get_email_to_addrs_from_uid(explicit_emails)
+                return self.ldap_lookup.get_email_to_addrs_from_uid(explicit_emails)
             # the org_domain setting is configured, append the org_domain
             # to the username from AWS
             elif self.config.get('org_domain', False):
