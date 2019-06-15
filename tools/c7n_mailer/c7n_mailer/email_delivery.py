@@ -129,7 +129,7 @@ class EmailDelivery(object):
         ldap_uid_tag_keys = self.config.get('ldap_uid_tags', [])
         ldap_uri = self.config.get('ldap_uri', False)
         if not ldap_uid_tag_keys or not ldap_uri:
-            return []
+           return []
         # this whole section grabs any ldap uids (including manager emails if option is on)
         # and gets the emails for them and returns an array with all the emails
         ldap_uid_tag_values = get_resource_tag_targets(resource, ldap_uid_tag_keys)
