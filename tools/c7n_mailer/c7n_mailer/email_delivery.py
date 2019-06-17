@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from email.mime.text import MIMEText
-from itertools import chain
 import six
 
 from .ldap_lookup import LdapLookup
